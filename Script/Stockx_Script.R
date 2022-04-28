@@ -18,11 +18,11 @@ shoesize <- StockX_Data_Contest_2019$`Shoe Size`
 brand <- StockX_Data_Contest_2019$'Brand'
 retailprice <- StockX_Data_Contest_2019$`Retail Price`
 orderdate <- StockX_Data_Contest_2019$`Order Date`
-year <- StockX_Data_Contest_2019$'year'
 
 # To get year as column
 format(as.Date(StockX_Data_Contest_2019$`Order Date`, format="%Y/%m/%d"),"%Y")
 StockX_Data_Contest_2019$year <- format(as.Date(StockX_Data_Contest_2019$`Order Date`, format="%Y/%m/%d"),"%Y")
+year <- StockX_Data_Contest_2019$'year'
 
 
 ## Visualisation 1
