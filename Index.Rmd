@@ -1,0 +1,117 @@
+---
+title: "PSY6422 Research Project"
+author: "210192104"
+date: "25/04/2022"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+## Contents
+
+* Data Origin
+* Data Preparation
+* Research Questions
+* Visualisation 1
+* Visualisation 2
+* Summary
+* Limitations and Future Directions
+
+```{r setup, warning = FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(jpeg)
+library(here)
+library(readxl)
+library(tidyverse)
+```
+
+```{r}
+#Path to stockX image
+#Inclusion of graphics
+knitr::include_graphics(here("images","stockx.jpg"))
+```
+
+## Data Origin
+
+When thinking about a data set to use for this Data analysis and visualisation module i thought about the things that i enjoy. Psychology is undoubtedly a passion of mine, however i thought about whether i would have another opportunity to create a project based entirely on sneakers again, and the answer was probably not. 
+I retrieved the data used in this project from  [Kaggle](https://www.kaggle.com/datasets/hudsonstuck/stockx-data-contest). The data includes input from the online Sneaker reselling site, [StockX](https://stockx.com). A website commonly used in order to buy and sell Sneakers that are sold out in retail stores, often at an inflated price; dependent on the sneakers exclusivity. The data focuses on two different brands, Off-White collaborations with Nike & Yeezy (produced by Adidas). Due to [StockX](https://stockx.com) being a reselling site, the data set also includes the price in which each sneaker was sold at retail price (in USD- $) through the Nike/Adidas websites, in addition to their sale price on [StockX](https://stockx.com). All data was collected between 01/09/2017- 13/02/2019, consisting of 99956 entries. Finally the data set specifies in which US state the sneakers were purchased at resale price in and which size they purchased in (US Mens).
+
+```{r}
+#Inclusion of graphics- Yeezy image
+knitr::include_graphics(here("images","yeezyimage.jpg"))
+#Inclusion of graphics- Off-white image
+knitr::include_graphics(here("images","offwhiteimage.jpg"))
+
+```
+
+```{r, message=FALSE}
+#Load the data set
+StockX_Data_Contest_2019<- read_excel(here("Data","/StockX-Data-Contest-2019.xlsx"))
+head(StockX_Data_Contest_2019)
+```
+## Data preparation
+
+For this particular analysis, I will only be using some of the variables included within the original data set. Those being: Brand, Retail Price, Sale Price and Year.
+
+```{r}
+#Adding a year column
+StockX_Data_Contest_2019$year <- format(as.Date(StockX_Data_Contest_2019$`Order Date`, format="%Y/%m/%d"),"%Y")
+
+#Tidying values
+saleprice <- StockX_Data_Contest_2019$`Sale Price`
+sneakername <- StockX_Data_Contest_2019$`Sneaker Name`
+shoesize <- StockX_Data_Contest_2019$`Shoe Size`
+brand <- StockX_Data_Contest_2019$'Brand'
+retailprice <- StockX_Data_Contest_2019$`Retail Price`
+orderdate <- StockX_Data_Contest_2019$`Order Date`
+year <- StockX_Data_Contest_2019$'year'
+```
+
+```{r}
+knitr::kable(StockX_Data_Contest_2019[2:5,2:5], caption="Variables used from the Original StockX Dataset for Visualisation 1" ,format="markdown")
+```
+
+## Research Questions
+* Which Sneaker brand can be sold for the highest profit margin?
+* When was it most beneficial to resell a sneaker of either Off-white or Yeezy in order to maximize profits?
+
+## Visualisation 1
+
+```{r, warning=FALSE, message=FALSE}
+#Plotting Visualisation 1
+library (ggplot2)
+p <- ggplot(data = StockX_Data_Contest_2019, mapping = aes(x = `Retail Price`,  y = `Sale Price`, color= StockX_Data_Contest_2019$'Brand'))
+p + geom_point() + labs(title = "Overall Resale price- Off-White vs Yeezy") +
+scale_x_log10(labels= scales::dollar) +
+scale_y_log10(labels= scales::dollar) +
+guides(color = guide_legend(title = "Brand"))
+ggsave("profitdifference.png")
+```
+
+This graph shows that the resale value of the Off-White sneakers are generally higher than the Yeezy sneakers, despite generally having a lower retail price, i can predict that this may be due to exclusivity. Interestingly the resale value appears to be highest for the sneakers in the middle price range (Between $175 and $200) in both the Yeezy's and Off-White's. 
+
+## Visualisation 2
+```{r, warning=FALSE, message=FALSE}
+#Plotting Visualisation 2
+ggplot (data=StockX_Data_Contest_2019, aes (x= StockX_Data_Contest_2019$year, y= StockX_Data_Contest_2019$`Sale Price`, group= StockX_Data_Contest_2019$Brand )) +
+  geom_line(aes(color= StockX_Data_Contest_2019$Brand))+
+  labs (x = "Year", y = "Sale Price ($)", title = "Changes in Sneaker Resale Price")+
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))+
+  guides(color = guide_legend(title = "Brand"))
+ggsave("pricedifferenceyear.png")
+```
+
+This graph displays the sale price differences of Off-White sneakers and Yeezy sneakers and the differences between them in the years 2017, 2018 and 2019. From this graph, it is clear that Yeezy sneakers were more profitable in the year 2017 compared to 2018 and 2019. On the other hand, Off-White sneakers appear to have been most profitable in 2018, which may be due to trends changing in this time. 
+
+## Summary
+In summary, if you are looking to achieve profit on sneakers, it would be beneficial to look at Off-White designs, as the profit potential of Yeezy sneakers has significantly reduced in recent years. It has been speculated that a potential reason for this could be due to Yeezy owner, Kanye West's [political views](https://www.vibe.com/lifestyle/style/kanye-west-yeezy-sales-lowered-613647/). An alternative suggestion is that Yeezy's growth initially was significant which has led to them lacking exclusivity in recent years, leading to them becoming a more [mass produced item.](https://footwearnews.com/2018/focus/athletic-outdoor/yeezy-production-negative-impact-sales-1202687695/)
+
+## Limitations and future directions
+
+One limitation of the data is that there are huge differences in resale price between colorways resell-ability in both Yeezy and Off-white sneakers, which is not evident within the graphs. The significant issue is that due to the mass production of the sneakers there are now more than [200 yeezy colorways](https://houseofheat.co/featured/every-adidas-yeezy-sneaker-ever-released/) and over [50 Off-white X Nike collaborations](https://www.farfetch.com/style-guide/street-style/nike-x-off-white-history-sneaker-drops/), therefore a complete comparison would create an enormous project and an unrealistic task. 
+Secondly, this data set consists exclusively of buyers based in the US, in which resale value will be significantly different compared to UK markets. This leads to the data being far less relatable for myself and potentially those reading this project. 
+
+In the future i would like to analyse more current data on sneakers, such as data from 2020, 2021 and 2022 from Stock X. This is due to potential fluctuations in the market value of Off-White products due to the tragic death of [Virgil Abloh](https://www.businessoffashion.com/community/people/virgil-abloh), the founder of the brand Off-White. Therefore i believe that ultimately comparing the years prior to his death with the years after would be extremely interesting in terms of sneaker value.
+
